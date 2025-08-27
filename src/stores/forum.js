@@ -7,7 +7,13 @@ import {
   orderBy,
   query,
   serverTimestamp,
-  where
+  where,
+  doc,
+  getDoc,
+  setDoc,
+  deleteDoc,
+  updateDoc,
+  increment
 } from 'firebase/firestore'
 import { db } from '../firebase/config'
 
@@ -40,6 +46,7 @@ export const useForumStore = defineStore('forum', () => {
         authorId,
         authorName,
         authorCourse,
+        likeCount: 0,
         timestamp: serverTimestamp()
       }
 
@@ -91,13 +98,123 @@ export const useForumStore = defineStore('forum', () => {
     }
   }
 
+  const toggleLike = async (postId, userId) => {
+    try {
+      const likeRef = doc(db, 'likes', `${postId}_${userId}`)
+      const likeDoc = await getDoc(likeRef)
+      
+      if (likeDoc.exists()) {
+        // Unlike: remove the like document and decrement count
+        await deleteDoc(likeRef)
+        await updateDoc(doc(db, 'posts', postId), {
+          likeCount: increment(-1)
+        })
+        return { success: true, action: 'unliked' }
+      } else {
+        // Like: create the like document and increment count
+        await setDoc(likeRef, {
+          postId,
+          userId,
+          timestamp: serverTimestamp()
+        })
+        await updateDoc(doc(db, 'posts', postId), {
+          likeCount: increment(1)
+        })
+        return { success: true, action: 'liked' }
+      }
+    } catch (error) {
+      console.error('Error toggling like:', error)
+      return { success: false, error: error.message }
+    }
+  }
+
+  const checkIfLiked = async (postId, userId) => {
+    try {
+      const likeRef = doc(db, 'likes', `${postId}_${userId}`)
+      const likeDoc = await getDoc(likeRef)
+      return likeDoc.exists()
+    } catch (error) {
+      console.error('Error checking like status:', error)
+      return false
+    }
+  }
+
+  const updatePost = async (postId, title, content) => {
+    try {
+      await updateDoc(doc(db, 'posts', postId), {
+        title,
+        content,
+        updatedAt: serverTimestamp()
+      })
+      await fetchPosts()
+      return { success: true }
+    } catch (error) {
+      console.error('Error updating post:', error)
+      return { success: false, error: error.message }
+    }
+  }
+
+  const deletePost = async (postId) => {
+    try {
+      // Delete the post
+      await deleteDoc(doc(db, 'posts', postId))
+      
+      // Delete all comments for this post
+      const commentsQuery = query(collection(db, 'comments'), where('postId', '==', postId))
+      const commentsSnapshot = await getDocs(commentsQuery)
+      const deletePromises = commentsSnapshot.docs.map(doc => deleteDoc(doc.ref))
+      await Promise.all(deletePromises)
+      
+      // Delete all likes for this post
+      const likesQuery = query(collection(db, 'likes'), where('postId', '==', postId))
+      const likesSnapshot = await getDocs(likesQuery)
+      const deleteLikesPromises = likesSnapshot.docs.map(doc => deleteDoc(doc.ref))
+      await Promise.all(deleteLikesPromises)
+      
+      await fetchPosts()
+      return { success: true }
+    } catch (error) {
+      console.error('Error deleting post:', error)
+      return { success: false, error: error.message }
+    }
+  }
+
+  const updateComment = async (commentId, comment) => {
+    try {
+      await updateDoc(doc(db, 'comments', commentId), {
+        comment,
+        updatedAt: serverTimestamp()
+      })
+      return { success: true }
+    } catch (error) {
+      console.error('Error updating comment:', error)
+      return { success: false, error: error.message }
+    }
+  }
+
+  const deleteComment = async (commentId) => {
+    try {
+      await deleteDoc(doc(db, 'comments', commentId))
+      return { success: true }
+    } catch (error) {
+      console.error('Error deleting comment:', error)
+      return { success: false, error: error.message }
+    }
+  }
+
   return {
     posts,
     comments,
     loading,
     fetchPosts,
     createPost,
+    updatePost,
+    deletePost,
     fetchComments,
-    createComment
+    createComment,
+    updateComment,
+    deleteComment,
+    toggleLike,
+    checkIfLiked
   }
 })
