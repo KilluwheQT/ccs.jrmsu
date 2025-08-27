@@ -1,12 +1,12 @@
 <template>
   <div class="space-y-12">
     <!-- Hero Section -->
-    <section class="text-center py-16 bg-gradient-to-br from-primary-50 to-primary-100 rounded-2xl">
+    <section class="text-center py-16 bg-gradient-to-br from-purple-900/50 via-purple-800/30 to-gray-900/50 rounded-2xl backdrop-blur-sm border border-purple-500/20">
       <div class="max-w-4xl mx-auto px-4">
-        <h1 class="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-          Hall of <span class="text-primary-600">Fame</span>
+        <h1 class="text-4xl md:text-6xl font-bold text-purple-300 mb-6">
+          Hall of <span class="text-purple-400">Fame</span>
         </h1>
-        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+        <p class="text-xl text-gray-300 max-w-3xl mx-auto">
           Celebrating the outstanding achievements and success stories of our students, 
           alumni, and faculty members who have made significant contributions to the field of computing.
         </p>
@@ -15,18 +15,18 @@
 
     <!-- Outstanding Students -->
     <section class="card">
-      <h2 class="text-3xl font-bold text-gray-900 mb-8 text-center">Outstanding Students</h2>
+      <h2 class="text-3xl font-bold text-purple-300 mb-8 text-center">Outstanding Students</h2>
       <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-lg p-6 text-center border border-yellow-200">
-          <div class="w-24 h-24 bg-yellow-200 rounded-full mx-auto mb-4 flex items-center justify-center">
-            <svg class="w-12 h-12 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="bg-gradient-to-br from-yellow-900/30 to-yellow-800/20 rounded-lg p-6 text-center border border-yellow-600/30 backdrop-blur-sm">
+          <div class="w-24 h-24 bg-yellow-800/50 rounded-full mx-auto mb-4 flex items-center justify-center">
+            <svg class="w-12 h-12 text-yellow-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
             </svg>
           </div>
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">Maria Clara Santos</h3>
-          <p class="text-yellow-700 font-medium mb-2">BS Computer Science, Class of 2023</p>
-          <p class="text-sm text-gray-600 mb-3">Summa Cum Laude</p>
-          <p class="text-xs text-gray-600">
+          <h3 class="text-lg font-semibold text-gray-200 mb-2">Maria Clara Santos</h3>
+          <p class="text-yellow-300 font-medium mb-2">BS Computer Science, Class of 2023</p>
+          <p class="text-sm text-gray-300 mb-3">Summa Cum Laude</p>
+          <p class="text-xs text-gray-300">
             Outstanding thesis on "Machine Learning Applications in Healthcare" 
             and recipient of the Dean's Excellence Award.
           </p>

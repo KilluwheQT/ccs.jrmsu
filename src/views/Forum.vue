@@ -3,8 +3,8 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
       <div>
-        <h1 class="text-3xl font-bold text-gray-900">CCS Forum</h1>
-        <p class="text-gray-600 mt-2">Join the discussion with fellow CCS students and faculty</p>
+        <h1 class="text-3xl font-bold text-purple-300">CCS Forum</h1>
+                  <p class="text-gray-300 mt-2">Join the discussion with fellow CCS students and faculty</p>
       </div>
       <div v-if="authStore.isAuthenticated && authStore.isApproved" class="flex gap-2">
         <button 
@@ -18,10 +18,10 @@
 
     <!-- Create Post Form -->
     <div v-if="showCreatePost && authStore.isAuthenticated && authStore.isApproved" class="card">
-      <h3 class="text-lg font-semibold text-gray-900 mb-4">Create New Post</h3>
+      <h3 class="text-lg font-semibold text-gray-200 mb-4">Create New Post</h3>
       <form @submit.prevent="handleCreatePost" class="space-y-4">
         <div>
-          <label for="title" class="block text-sm font-medium text-gray-700 mb-1">
+          <label for="title" class="block text-sm font-medium text-gray-300 mb-1">
             Title
           </label>
           <input
@@ -35,7 +35,7 @@
           />
         </div>
         <div>
-          <label for="content" class="block text-sm font-medium text-gray-700 mb-1">
+          <label for="content" class="block text-sm font-medium text-gray-300 mb-1">
             Content
           </label>
           <textarea
@@ -78,12 +78,12 @@
 
     <!-- Authentication Required Message -->
     <div v-if="!authStore.isAuthenticated" class="card text-center">
-      <div class="text-gray-600 mb-4">
+      <div class="text-gray-300 mb-4">
         <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
         </svg>
-        <h3 class="text-lg font-semibold text-gray-900 mb-2">Authentication Required</h3>
-        <p class="text-gray-600 mb-4">
+        <h3 class="text-lg font-semibold text-gray-200 mb-2">Authentication Required</h3>
+        <p class="text-gray-300 mb-4">
           You need to be logged in to create posts and comment on discussions.
         </p>
         <router-link to="/login" class="btn-primary">
@@ -96,7 +96,7 @@
     
     <!-- Approval Pending Message -->
     <div v-if="authStore.isAuthenticated && !authStore.isApproved" class="card text-center">
-      <div class="text-gray-600 mb-4">
+      <div class="text-gray-300 mb-4">
         <svg class="w-16 h-16 mx-auto text-yellow-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
@@ -141,7 +141,7 @@
                 <button 
                   v-if="post.authorId === authStore.user?.uid"
                   @click="editPost(post)"
-                  class="inline-flex items-center gap-1 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-sm font-medium transition-colors duration-200 border border-blue-200 hover:border-blue-300"
+                  class="inline-flex items-center gap-1 px-3 py-1.5 bg-primary-50 hover:bg-primary-100 text-primary-700 rounded-lg text-sm font-medium transition-colors duration-200 border border-primary-200 hover:border-primary-300"
                   title="Edit post"
                 >
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -236,7 +236,7 @@
              <button 
                type="submit" 
                :disabled="updatingPost"
-               class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors duration-200 shadow-sm hover:shadow-md"
+               class="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors duration-200 shadow-sm hover:shadow-md"
              >
                <svg v-if="updatingPost" class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -323,7 +323,7 @@
                        <button 
                          v-if="comment.authorId === authStore.user?.uid"
                          @click="editComment(comment)"
-                         class="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-md text-xs font-medium transition-colors duration-200 border border-blue-200 hover:border-blue-300"
+                         class="inline-flex items-center gap-1 px-2 py-1 bg-primary-50 hover:bg-primary-100 text-primary-700 rounded-md text-xs font-medium transition-colors duration-200 border border-primary-200 hover:border-primary-300"
                          title="Edit comment"
                        >
                          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -369,7 +369,7 @@
                        <button 
                          type="submit" 
                          :disabled="updatingComment"
-                         class="inline-flex items-center gap-1 px-2 py-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded text-xs font-medium transition-colors duration-200 shadow-sm hover:shadow-md"
+                         class="inline-flex items-center gap-1 px-2 py-1 bg-primary-600 hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded text-xs font-medium transition-colors duration-200 shadow-sm hover:shadow-md"
                        >
                          <svg v-if="updatingComment" class="w-3 h-3 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />

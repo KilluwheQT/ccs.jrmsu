@@ -2,15 +2,15 @@
   <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-md w-full space-y-8">
       <div class="text-center">
-        <h2 class="text-3xl font-bold text-gray-900">
+        <h2 class="text-3xl font-bold text-purple-300">
           {{ isLogin ? 'Sign in to your account' : 'Create your account' }}
         </h2>
-        <p class="mt-2 text-sm text-gray-600">
+        <p class="mt-2 text-sm text-gray-300">
           {{ isLogin ? "Don't have an account?" : "Already have an account?" }}
-          <button 
-            @click="toggleMode" 
-            class="font-medium text-primary-600 hover:text-primary-500"
-          >
+                      <button 
+              @click="toggleMode" 
+              class="font-medium text-purple-400 hover:text-purple-300"
+            >
             {{ isLogin ? 'Sign up' : 'Sign in' }}
           </button>
         </p>
@@ -19,7 +19,7 @@
       <div class="card">
         <form @submit.prevent="handleSubmit" class="space-y-6">
           <div v-if="!isLogin">
-            <label for="name" class="block text-sm font-medium text-gray-700">
+            <label for="name" class="block text-sm font-medium text-gray-300">
               Full Name
             </label>
             <input
@@ -33,7 +33,7 @@
           </div>
 
           <div v-if="!isLogin">
-            <label for="course" class="block text-sm font-medium text-gray-700">
+            <label for="course" class="block text-sm font-medium text-gray-300">
               Course
             </label>
             <select
@@ -51,7 +51,7 @@
           </div>
 
           <div>
-            <label for="email" class="block text-sm font-medium text-gray-700">
+            <label for="email" class="block text-sm font-medium text-gray-300">
               Email address
             </label>
             <input
@@ -65,7 +65,7 @@
           </div>
 
           <div>
-            <label for="password" class="block text-sm font-medium text-gray-700">
+            <label for="password" class="block text-sm font-medium text-gray-300">
               Password
             </label>
             <input
@@ -80,7 +80,7 @@
           </div>
 
           <div v-if="!isLogin">
-            <label for="confirmPassword" class="block text-sm font-medium text-gray-700">
+            <label for="confirmPassword" class="block text-sm font-medium text-gray-300">
               Confirm Password
             </label>
             <input
@@ -94,13 +94,13 @@
             />
           </div>
 
-          <div v-if="error" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-            {{ error }}
-          </div>
+                     <div v-if="error" class="bg-red-900/30 border border-red-600/30 text-red-200 px-4 py-3 rounded-lg">
+             {{ error }}
+           </div>
 
-          <div v-if="success" class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
-            {{ success }}
-          </div>
+           <div v-if="success" class="bg-green-900/30 border border-green-600/30 text-green-200 px-4 py-3 rounded-lg">
+             {{ success }}
+           </div>
 
           <button
             type="submit"
@@ -122,10 +122,10 @@
       </div>
 
       <div class="text-center">
-        <router-link 
-          to="/" 
-          class="text-sm text-gray-600 hover:text-primary-600"
-        >
+                 <router-link 
+           to="/" 
+           class="text-sm text-gray-300 hover:text-purple-400"
+         >
           ← Back to Home
         </router-link>
       </div>

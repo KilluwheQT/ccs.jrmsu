@@ -3,8 +3,8 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
       <div>
-        <h1 class="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-        <p class="text-gray-600 mt-2">Manage users, approve registrations, and oversee the forum</p>
+        <h1 class="text-3xl font-bold text-purple-300">Admin Dashboard</h1>
+                  <p class="text-gray-300 mt-2">Manage users, approve registrations, and oversee the forum</p>
       </div>
       <div class="flex gap-2">
         <button 

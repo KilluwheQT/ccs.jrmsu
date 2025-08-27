@@ -2,6 +2,7 @@
 import { onMounted } from 'vue'
 import { useAuthStore } from './stores/auth'
 import Navbar from './components/Navbar.vue'
+import Footer from './components/Footer.vue'
 
 const authStore = useAuthStore()
 
@@ -11,7 +12,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div id="app" class="min-h-screen bg-gray-50">
+  <div id="app" class="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900">
     <Navbar />
     <main class="container mx-auto px-4 py-8">
       <router-view v-slot="{ Component }">
@@ -20,6 +21,7 @@ onMounted(() => {
         </transition>
       </router-view>
     </main>
+    <Footer />
   </div>
 </template>
 
