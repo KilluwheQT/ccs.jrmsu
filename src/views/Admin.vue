@@ -186,11 +186,26 @@
         <span class="text-sm text-gray-400">{{ authStore.pendingUsers.length }} users waiting</span>
       </div>
 
+      <!-- Temporary Debug Info
+      <div class="mb-4 p-3 bg-gray-800/30 border border-gray-600/30 rounded text-xs">
+        <p class="text-gray-300 mb-1">Debug: Total users in database: {{ authStore.allUsers.length }}</p>
+        <p class="text-gray-300 mb-1">Debug: Users with approved=false: {{ authStore.allUsers.filter(u => u.approved === false).length }}</p>
+        <p class="text-gray-300 mb-1">Debug: Users with role=user: {{ authStore.allUsers.filter(u => u.role === 'user').length }}</p>
+        <p class="text-gray-300">Debug: Users with approved=false AND role=user: {{ authStore.pendingUsers.length }}</p>
+        <button 
+          @click="createTestUser"
+          class="mt-2 px-2 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs"
+        >
+          Create Test Pending User
+        </button>
+      </div> -->
+
       <div v-if="authStore.pendingUsers.length === 0" class="text-center py-8">
         <svg class="w-16 h-16 mx-auto text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
         </svg>
         <p class="text-gray-400">No pending approvals</p>
+        <p class="text-xs text-gray-500 mt-2">Check the debug info above to see user data</p>
       </div>
 
       <div v-else class="space-y-4">
@@ -221,7 +236,16 @@
                 Approve Status
               </button>
               <button 
-                @click="rejectUser(user.id)"
+                @click="rejectUserStatus(user.id)"
+                class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center"
+              >
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                Reject Status
+              </button>
+              <button 
+                @click="deleteUser(user.id)"
                 class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center"
               >
                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -301,26 +325,6 @@
                   
                   <div class="flex gap-1">
                     <button 
-                      v-if="!user.approved"
-                      @click="approveUserStatus(user.id)"
-                      class="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded text-xs font-medium transition-colors flex items-center"
-                    >
-                      <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                      </svg>
-                      Approve
-                    </button>
-                    <button 
-                      v-if="user.approved"
-                      @click="rejectUserStatus(user.id)"
-                      class="bg-orange-600 hover:bg-orange-700 text-white px-2 py-1 rounded text-xs font-medium transition-colors flex items-center"
-                    >
-                      <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                      Reject
-                    </button>
-                    <button 
                       @click="deleteUser(user.id)"
                       class="bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded text-xs font-medium transition-colors flex items-center"
                     >
@@ -343,8 +347,12 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useAuthStore } from '../stores/auth'
+import { useAlert } from '../composables/useAlert'
+import { doc, setDoc } from 'firebase/firestore'
+import { db } from '../firebase/config'
 
 const authStore = useAuthStore()
+const { success, error, confirm } = useAlert()
 
 const showCreateAdmin = ref(false)
 const creatingAdmin = ref(false)
@@ -374,6 +382,31 @@ const refreshData = async () => {
   ])
 }
 
+const createTestUser = async () => {
+  const confirmed = await confirm('Create a test pending user?')
+  if (confirmed) {
+    try {
+      const testUser = {
+        uid: 'test-user-' + Date.now(),
+        email: 'test@example.com',
+        name: 'Test User',
+        course: 'Test Course',
+        role: 'user',
+        approved: false,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+      
+      await setDoc(doc(db, 'users', testUser.uid), testUser)
+      await success('Test user created! Refresh to see it.')
+      await refreshData()
+    } catch (err) {
+      console.error('Error creating test user:', err)
+      await error('Error creating test user: ' + err.message)
+    }
+  }
+}
+
 const handleCreateAdmin = async () => {
   if (!adminForm.name.trim() || !adminForm.email.trim() || !adminForm.password.trim()) return
   
@@ -391,13 +424,13 @@ const handleCreateAdmin = async () => {
       adminForm.password = ''
       showCreateAdmin.value = false
       await refreshData()
-      alert('Admin account created successfully!')
+      await success('Admin account created successfully!')
     } else {
-      alert('Error creating admin account: ' + result.error)
+      await error('Error creating admin account: ' + result.error)
     }
-  } catch (error) {
-    console.error('Error creating admin:', error)
-    alert('Error creating admin account')
+  } catch (err) {
+    console.error('Error creating admin:', err)
+    await error('Error creating admin account')
   } finally {
     creatingAdmin.value = false
   }
@@ -428,55 +461,58 @@ const rejectUser = async (userId) => {
 const updateUserRole = async (userId, role) => {
   const result = await authStore.updateUserRole(userId, role)
   if (result.success) {
-    alert('User role updated successfully!')
+    await success('User role updated successfully!')
   } else {
-    alert('Error updating user role: ' + result.error)
+    await error('Error updating user role: ' + result.error)
   }
 }
 
 const deleteUser = async (userId) => {
-  if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+  const confirmed = await confirm('Are you sure you want to delete this user? This action cannot be undone.')
+  if (confirmed) {
     const result = await authStore.deleteUser(userId)
     if (result.success) {
-      alert('User deleted successfully!')
+      await success('User deleted successfully!')
     } else {
-      alert('Error deleting user: ' + result.error)
+      await error('Error deleting user: ' + result.error)
     }
   }
 }
 
 // Approve User Status Button Handler
 const approveUserStatus = async (userId) => {
-  if (confirm('Are you sure you want to approve this user\'s status? They will be able to log in to the system.')) {
+  const confirmed = await confirm('Are you sure you want to approve this user\'s status? They will be able to log in to the system.')
+  if (confirmed) {
     try {
       const result = await authStore.acceptUserStatus(userId)
       if (result.success) {
-        alert('User status approved successfully! The user can now log in to the system.')
+        await success('User status approved successfully! The user can now log in to the system.')
         await refreshData()
       } else {
-        alert('Error approving user status: ' + result.error)
+        await error('Error approving user status: ' + result.error)
       }
-    } catch (error) {
-      alert('Error approving user status')
-      console.error(error)
+    } catch (err) {
+      await error('Error approving user status')
+      console.error(err)
     }
   }
 }
 
 // Reject User Status Button Handler
 const rejectUserStatus = async (userId) => {
-  if (confirm('Are you sure you want to reject this user\'s status? They will not be able to log in to the system.')) {
+  const confirmed = await confirm('Are you sure you want to reject this user\'s status? They will not be able to log in to the system.')
+  if (confirmed) {
     try {
       const result = await authStore.rejectUserStatus ? await authStore.rejectUserStatus(userId) : { success: false, error: 'rejectUserStatus not implemented in store' }
       if (result.success) {
-        alert('User status rejected successfully! The user will not be able to log in.')
+        await success('User status rejected successfully! The user will not be able to log in.')
         await refreshData()
       } else {
-        alert('Error rejecting user status: ' + result.error)
+        await error('Error rejecting user status: ' + result.error)
       }
-    } catch (error) {
-      alert('Error rejecting user status')
-      console.error(error)
+    } catch (err) {
+      await error('Error rejecting user status')
+      console.error(err)
     }
   }
 }

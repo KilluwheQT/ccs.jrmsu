@@ -124,19 +124,23 @@ export const useAuthStore = defineStore('auth', () => {
   // Admin functions
   const fetchPendingUsers = async () => {
     try {
-      const q = query(
-        collection(db, 'users'),
-        where('approved', '==', false),
-        where('role', '==', 'user'),
-        orderBy('createdAt', 'desc')
-      )
-      const querySnapshot = await getDocs(q)
-      pendingUsers.value = querySnapshot.docs.map(doc => ({
+      // First, let's get all users to see what we have
+      const allUsersQuery = query(collection(db, 'users'), orderBy('createdAt', 'desc'))
+      const allUsersSnapshot = await getDocs(allUsersQuery)
+      const allUsersData = allUsersSnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }))
+      
+      // Filter for pending users (not approved and role is user)
+      const pendingUsersData = allUsersData.filter(user => 
+        user.approved === false && user.role === 'user'
+      )
+      
+      pendingUsers.value = pendingUsersData
     } catch (error) {
       console.error('Error fetching pending users:', error)
+      pendingUsers.value = []
     }
   }
 

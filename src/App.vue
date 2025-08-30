@@ -3,6 +3,7 @@ import { onMounted } from 'vue'
 import { useAuthStore } from './stores/auth'
 import Navbar from './components/Navbar.vue'
 import Footer from './components/Footer.vue'
+import AlertContainer from './components/AlertContainer.vue'
 
 const authStore = useAuthStore()
 
@@ -22,6 +23,7 @@ onMounted(() => {
       </router-view>
     </main>
     <Footer />
+    <AlertContainer />
   </div>
 </template>
 

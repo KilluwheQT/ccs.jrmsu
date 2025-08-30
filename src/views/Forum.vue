@@ -285,11 +285,11 @@
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
               </svg>
-              <span>{{ expandedPosts.includes(post.id) ? 'Hide' : 'Show' }} Comments</span>
+              <span>{{ forumStore.expandedPosts.includes(post.id) ? 'Hide' : 'Show' }} Comments</span>
             </button>
           </div>
           
-          <div v-if="expandedPosts.includes(post.id)">
+          <div v-if="forumStore.expandedPosts.includes(post.id)">
             <!-- Comment Form -->
             <div v-if="authStore.isAuthenticated && authStore.isApproved" class="mb-6">
               <form @submit.prevent="handleCreateComment(post.id)" class="space-y-3">
@@ -319,22 +319,22 @@
             </div>
             
             <!-- Comments List -->
-            <div v-if="postComments[post.id]?.loading" class="text-center py-4">
+            <div v-if="forumStore.postComments[post.id]?.loading" class="text-center py-4">
               <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-500 mx-auto"></div>
               <p class="text-gray-400 mt-2">Loading comments...</p>
             </div>
             
-            <div v-else-if="postComments[post.id]?.error" class="text-center py-4 text-red-400">
-              <p>Error loading comments: {{ postComments[post.id].error }}</p>
+            <div v-else-if="forumStore.postComments[post.id]?.error" class="text-center py-4 text-red-400">
+              <p>Error loading comments: {{ forumStore.postComments[post.id].error }}</p>
             </div>
             
-            <div v-else-if="!postComments[post.id]?.comments || postComments[post.id]?.comments?.length === 0" class="text-center py-4 text-gray-400">
+            <div v-else-if="!forumStore.postComments[post.id]?.comments || forumStore.postComments[post.id]?.comments?.length === 0" class="text-center py-4 text-gray-400">
               <p>No comments yet. Be the first to comment!</p>
             </div>
             
             <div v-else class="space-y-4">
               <div 
-                v-for="comment in postComments[post.id]?.comments" 
+                v-for="comment in forumStore.postComments[post.id]?.comments" 
                 :key="comment.id"
                 class="bg-gray-800/50 rounded-lg p-4 border border-purple-500/20"
               >
@@ -426,16 +426,17 @@
 import { ref, reactive, onMounted, computed, watch } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import { useForumStore } from '../stores/forum'
+import { useAlert } from '../composables/useAlert'
 
 const authStore = useAuthStore()
 const forumStore = useForumStore()
+const { success, error, confirm } = useAlert()
 
 const showCreatePost = ref(false)
 const creatingPost = ref(false)
 const updatingPost = ref(false)
 const updatingComment = ref(false)
 const creatingComment = ref(false)
-const expandedPosts = ref([])
 const newComments = reactive({})
 const postLikes = reactive({})
 const likingPosts = reactive({})
@@ -456,8 +457,6 @@ const editCommentForm = reactive({
   comment: ''
 })
 
-const postComments = reactive({})
-
 onMounted(async () => {
   await forumStore.fetchPosts()
   // Check like status for all posts if user is authenticated
@@ -474,23 +473,19 @@ watch(() => forumStore.posts, async (newPosts) => {
 }, { deep: true })
 
 const toggleComments = async (postId) => {
-  const index = expandedPosts.value.indexOf(postId)
+  const index = forumStore.expandedPosts.indexOf(postId)
   if (index > -1) {
-    expandedPosts.value.splice(index, 1)
+    forumStore.expandedPosts.splice(index, 1)
   } else {
-    expandedPosts.value.push(postId)
+    forumStore.expandedPosts.push(postId)
     
-    if (!postComments[postId]) {
-      postComments[postId] = { loading: true, comments: [] }
+    if (!forumStore.postComments[postId]) {
+      forumStore.postComments[postId] = { loading: true, comments: [] }
       
       try {
-        const comments = await forumStore.fetchComments(postId)
-        postComments[postId].comments = comments
-        postComments[postId].loading = false
+        await forumStore.fetchComments(postId)
       } catch (error) {
         console.error('Error fetching comments:', error)
-        postComments[postId].loading = false
-        postComments[postId].error = error.message
       }
     }
     
@@ -543,37 +538,12 @@ const handleCreateComment = async (postId) => {
     
     if (result.success) {
       newComments[postId] = ''
-      
-      // Create the new comment object to add to local state
-      const newComment = {
-        id: result.commentId,
-        postId: postId,
-        comment: comment,
-        authorId: authStore.user.uid,
-        authorName: authStore.userProfile?.name || authStore.user.email,
-        authorCourse: authStore.userProfile?.course,
-        timestamp: new Date()
-      }
-      
-      // Add the new comment to the local state immediately
-      if (postComments[postId]) {
-        if (!postComments[postId].comments) {
-          postComments[postId].comments = []
-        }
-        postComments[postId].comments.push(newComment)
-      } else {
-        // Initialize if not exists
-        postComments[postId] = {
-          loading: false,
-          comments: [newComment]
-        }
-      }
     } else {
-      alert('Failed to create comment: ' + result.error)
+      await error('Failed to create comment: ' + result.error)
     }
-  } catch (error) {
-    console.error('Error creating comment:', error)
-    alert('Error creating comment: ' + error.message)
+  } catch (err) {
+    console.error('Error creating comment:', err)
+    await error('Error creating comment: ' + err.message)
   } finally {
     creatingComment.value = false
   }
@@ -668,14 +638,15 @@ const deletePost = async (postId, authorName) => {
     ? 'Are you sure you want to delete your post? This action cannot be undone.'
     : `Are you sure you want to delete this post by ${authorName}? This action cannot be undone.`
   
-  if (confirm(message)) {
+  const confirmed = await confirm(message)
+  if (confirmed) {
     try {
       const result = await forumStore.deletePost(postId)
       if (result.success) {
         // Post will be removed from the list automatically
       }
-    } catch (error) {
-      console.error('Error deleting post:', error)
+    } catch (err) {
+      console.error('Error deleting post:', err)
     }
   }
 }
@@ -698,8 +669,6 @@ const handleUpdateComment = async (commentId, postId) => {
     const result = await forumStore.updateComment(commentId, editCommentForm.comment)
     if (result.success) {
       cancelEditComment()
-      // Refresh comments for this post
-      postComments[postId].comments = await forumStore.fetchComments(postId)
     }
   } catch (error) {
     console.error('Error updating comment:', error)
@@ -709,20 +678,20 @@ const handleUpdateComment = async (commentId, postId) => {
 }
 
 const deleteComment = async (commentId, postId, authorName) => {
-  const isOwnComment = postComments[postId]?.comments?.find(c => c.id === commentId)?.authorId === authStore.user?.uid
+  const isOwnComment = forumStore.postComments[postId]?.comments?.find(c => c.id === commentId)?.authorId === authStore.user?.uid
   const message = isOwnComment 
     ? 'Are you sure you want to delete your comment?'
     : `Are you sure you want to delete this comment by ${authorName}?`
   
-  if (confirm(message)) {
+  const confirmed = await confirm(message)
+  if (confirmed) {
     try {
       const result = await forumStore.deleteComment(commentId)
       if (result.success) {
-        // Refresh comments for this post
-        postComments[postId].comments = await forumStore.fetchComments(postId)
+        // Comment is automatically removed from store state
       }
-    } catch (error) {
-      console.error('Error deleting comment:', error)
+    } catch (err) {
+      console.error('Error deleting comment:', err)
     }
   }
 }

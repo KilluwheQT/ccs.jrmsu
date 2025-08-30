@@ -21,6 +21,8 @@ export const useForumStore = defineStore('forum', () => {
   const posts = ref([])
   const comments = ref([])
   const loading = ref(false)
+  const postComments = ref({})
+  const expandedPosts = ref([])
 
   const fetchPosts = async () => {
     loading.value = true
@@ -64,8 +66,7 @@ export const useForumStore = defineStore('forum', () => {
     try {
       const q = query(
         collection(db, 'comments'),
-        where('postId', '==', postId),
-        orderBy('timestamp', 'asc')
+        where('postId', '==', postId)
       )
       
       const querySnapshot = await getDocs(q)
@@ -75,9 +76,28 @@ export const useForumStore = defineStore('forum', () => {
         ...doc.data()
       }))
       
+      // Sort comments by timestamp manually
+      comments.sort((a, b) => {
+        const timestampA = a.timestamp?.toDate ? a.timestamp.toDate() : new Date(a.timestamp)
+        const timestampB = b.timestamp?.toDate ? b.timestamp.toDate() : new Date(b.timestamp)
+        return timestampA - timestampB
+      })
+      
+      // Store comments in the store state
+      postComments.value[postId] = {
+        loading: false,
+        comments: comments,
+        error: null
+      }
+      
       return comments
     } catch (error) {
       console.error('Error fetching comments:', error)
+      postComments.value[postId] = {
+        loading: false,
+        comments: [],
+        error: error.message
+      }
       return []
     }
   }
@@ -109,6 +129,30 @@ export const useForumStore = defineStore('forum', () => {
       }
 
       const docRef = await addDoc(collection(db, 'comments'), commentData)
+
+      // Add the new comment to the store state immediately
+      const newComment = {
+        id: docRef.id,
+        postId,
+        comment,
+        authorId,
+        authorName,
+        authorCourse,
+        timestamp: new Date()
+      }
+
+      if (postComments.value[postId]) {
+        if (!postComments.value[postId].comments) {
+          postComments.value[postId].comments = []
+        }
+        postComments.value[postId].comments.push(newComment)
+      } else {
+        postComments.value[postId] = {
+          loading: false,
+          comments: [newComment],
+          error: null
+        }
+      }
 
       return { success: true, commentId: docRef.id }
     } catch (error) {
@@ -204,6 +248,17 @@ export const useForumStore = defineStore('forum', () => {
         comment,
         updatedAt: serverTimestamp()
       })
+      
+      // Update comment in store state
+      for (const postId in postComments.value) {
+        const commentIndex = postComments.value[postId].comments?.findIndex(c => c.id === commentId)
+        if (commentIndex !== -1 && commentIndex !== undefined) {
+          postComments.value[postId].comments[commentIndex].comment = comment
+          postComments.value[postId].comments[commentIndex].updatedAt = new Date()
+          break
+        }
+      }
+      
       return { success: true }
     } catch (error) {
       console.error('Error updating comment:', error)
@@ -214,6 +269,16 @@ export const useForumStore = defineStore('forum', () => {
   const deleteComment = async (commentId) => {
     try {
       await deleteDoc(doc(db, 'comments', commentId))
+      
+      // Remove comment from store state
+      for (const postId in postComments.value) {
+        const commentIndex = postComments.value[postId].comments?.findIndex(c => c.id === commentId)
+        if (commentIndex !== -1 && commentIndex !== undefined) {
+          postComments.value[postId].comments.splice(commentIndex, 1)
+          break
+        }
+      }
+      
       return { success: true }
     } catch (error) {
       console.error('Error deleting comment:', error)
@@ -225,6 +290,8 @@ export const useForumStore = defineStore('forum', () => {
     posts,
     comments,
     loading,
+    postComments,
+    expandedPosts,
     fetchPosts,
     createPost,
     updatePost,
