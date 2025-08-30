@@ -1,5 +1,5 @@
 <template>
-  <footer class="bg-gray-900 text-white py-8 mt-16">
+  <footer class="bg-gray-900 text-white py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <!-- Developer Credits -->
       <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
@@ -11,7 +11,7 @@
         <div class="flex items-center space-x-6">
           <div class="text-sm text-gray-400">
             Developed by 
-            <span class="font-semibold text-primary-400">DevLabs</span>
+            <span class="font-semibold text-purple-400">DevLabs</span>
           </div>
           
           <!-- Social Links -->

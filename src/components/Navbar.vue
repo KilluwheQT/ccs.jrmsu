@@ -4,7 +4,23 @@
       <div class="flex justify-between h-16">
         <div class="flex items-center">
           <router-link to="/" class="flex-shrink-0 flex items-center">
-            <h1 class="text-2xl font-bold text-purple-400">CCS Forum</h1>
+            <svg class="w-10 h-10" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <radialGradient id="ccs-g" cx="50%" cy="40%" r="70%">
+                  <stop offset="0%" stop-color="#c084fc"/>
+                  <stop offset="100%" stop-color="#581587"/>
+                </radialGradient>
+                <linearGradient id="ccs-shine" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#fff" stop-opacity="0.7"/>
+                  <stop offset="100%" stop-color="#fff" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <rect width="64" height="64" rx="16" fill="url(#ccs-g)"/>
+              <ellipse cx="32" cy="28" rx="22" ry="20" fill="#fff" fill-opacity="0.10"/>
+              <ellipse cx="32" cy="24" rx="16" ry="8" fill="url(#ccs-shine)"/>
+              <text x="50%" y="58%" text-anchor="middle" font-size="28" font-family="Segoe UI, Arial, Helvetica, sans-serif" fill="#fff" font-weight="bold" letter-spacing="2" style="paint-order:stroke">CCS</text>
+              <circle cx="32" cy="32" r="30" fill="none" stroke="#a855f7" stroke-width="2" stroke-dasharray="6 6" opacity="0.25"/>
+            </svg>
           </router-link>
         </div>
 

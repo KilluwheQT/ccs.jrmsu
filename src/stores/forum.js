@@ -67,13 +67,32 @@ export const useForumStore = defineStore('forum', () => {
         where('postId', '==', postId),
         orderBy('timestamp', 'asc')
       )
+      
       const querySnapshot = await getDocs(q)
-      return querySnapshot.docs.map(doc => ({
+      
+      const comments = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }))
+      
+      return comments
     } catch (error) {
       console.error('Error fetching comments:', error)
+      return []
+    }
+  }
+
+  const fetchAllComments = async () => {
+    try {
+      const q = query(collection(db, 'comments'), orderBy('timestamp', 'desc'))
+      const querySnapshot = await getDocs(q)
+      const comments = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }))
+      return comments
+    } catch (error) {
+      console.error('Error fetching all comments:', error)
       return []
     }
   }
@@ -211,6 +230,7 @@ export const useForumStore = defineStore('forum', () => {
     updatePost,
     deletePost,
     fetchComments,
+    fetchAllComments,
     createComment,
     updateComment,
     deleteComment,

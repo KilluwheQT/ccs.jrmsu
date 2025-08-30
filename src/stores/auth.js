@@ -244,6 +244,34 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  const acceptUserStatus = async (userId) => {
+    try {
+      await updateDoc(doc(db, 'users', userId), {
+        approved: true,
+        updatedAt: new Date()
+      })
+      await fetchPendingUsers()
+      await fetchAllUsers()
+      return { success: true }
+    } catch (error) {
+      return { success: false, error: error.message }
+    }
+  }
+
+  const rejectUserStatus = async (userId) => {
+    try {
+      await updateDoc(doc(db, 'users', userId), {
+        approved: false,
+        updatedAt: new Date()
+      })
+      await fetchPendingUsers()
+      await fetchAllUsers()
+      return { success: true }
+    } catch (error) {
+      return { success: false, error: error.message }
+    }
+  }
+
   return {
     user,
     userProfile,
@@ -264,6 +292,8 @@ export const useAuthStore = defineStore('auth', () => {
     updateUserRole,
     deleteUser,
     createAdminAccount,
-    approveCurrentUser
+    approveCurrentUser,
+    acceptUserStatus,
+    rejectUserStatus
   }
 })

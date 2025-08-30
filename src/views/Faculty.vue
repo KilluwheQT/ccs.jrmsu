@@ -45,6 +45,33 @@
         </div>
       </div>
 
+      <div class="card">
+        <h3 class="text-2xl font-bold text-gray-200 mb-6 text-center">Department Head</h3>
+        <div class="grid md:grid-cols-2 gap-8 items-center">
+          <div class="text-center">
+            <div class="w-48 h-48 bg-gray-200 rounded-full mx-auto mb-6 flex items-center justify-center">
+              <svg class="w-24 h-24 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </div>
+          </div>
+          <div>
+            <h4 class="text-xl font-semibold text-gray-200 mb-2">Dr. Maria Santos</h4>
+            <p class="text-purple-400 font-medium mb-3">Dean, College of Computing Studies</p>
+            <p class="text-gray-300 mb-4">
+              Dr. Santos holds a Ph.D. in Computer Science from the University of the Philippines. 
+              With over 15 years of experience in academia and industry, she specializes in 
+              software engineering and artificial intelligence.
+            </p>
+            <div class="space-y-2 text-sm text-gray-300">
+              <p><strong>Education:</strong> Ph.D. Computer Science, University of the Philippines</p>
+              <p><strong>Research Areas:</strong> Software Engineering, AI, Machine Learning</p>
+              <p><strong>Email:</strong> maria.santos@jrmsu.edu.ph</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Computer Science Faculty -->
       <div class="card">
         <h3 class="text-2xl font-bold text-gray-200 mb-6">Computer Science Department</h3>
