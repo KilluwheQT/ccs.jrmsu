@@ -114,7 +114,7 @@
             </svg>
           </div>
           <div class="ml-4">
-            <p class="text-sm font-medium text-gray-400">Total Users</p>
+            <p class="text-sm fmedium text-gray-400">Total Users</p>
             <p class="text-2xl font-semibold text-purple-300">{{ authStore.allUsers.length }}</p>
           </div>
         </div>

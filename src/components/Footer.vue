@@ -11,7 +11,7 @@
         <div class="flex items-center space-x-6">
           <div class="text-sm text-gray-400">
             Developed by 
-            <span class="font-semibold text-purple-400">DevLabs</span>
+            <span class="font-semibold text-purple-400">DevLabs/KilluwheCodes</span>
           </div>
           
           <!-- Social Links -->
