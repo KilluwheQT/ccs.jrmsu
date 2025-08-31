@@ -4,7 +4,7 @@
      <section class="text-center py-16 bg-gradient-to-br from-purple-900/50 via-purple-800/30 to-gray-900/50 rounded-2xl backdrop-blur-sm border border-purple-500/20">
       <div class="max-w-4xl mx-auto px-4">
                  <h1 class="text-4xl md:text-6xl font-bold text-purple-300 mb-6">
-           Welcome to <span class="text-purple-400">Veejay>
+                  Welcome to <span class="text-purple-400">Veejay</span>
          </h1>
          <p class="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
           Connect, collaborate, and stay updated with the College of Computing Studies community. 
